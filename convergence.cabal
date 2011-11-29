@@ -1,0 +1,8 @@
+Name:                convergence
+Version:             0.0
+Synopsis:            convergence notary
+Build-Depends:       base, HsOpenSSL
+Build-Type:          Simple
+
+Executable:          convergence
+Main-is:             src/convergence.hs
