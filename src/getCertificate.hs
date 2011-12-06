@@ -29,16 +29,12 @@ hashing algo str = do
 fingerprintX509 :: String -> X509 -> IO String
 fingerprintX509 algo x509 = do
     pem <- writeX509 x509
-
-    let cutedPem = cutPem pem
-    let pemDecoded = decode cutedPem
-    hash <- hashing algo pemDecoded
+    hash <- hashing algo $ decode $ cutPem pem
     return hash
     where
         -- cuts "--Begin..." and "---End"
         cutPem :: String -> String
-        cutPem pem = let lines = init (init(tail(splitOn "\n" pem)))
-              in concat (map (\l -> l ++ "\n") lines)
+        cutPem pem = concat $ init $ tail $ splitOn "\n" pem
 
 fingerprint :: String -> Int -> IO String
 fingerprint domain port  = withOpenSSL $ do
