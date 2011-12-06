@@ -20,19 +20,19 @@ toHex n l
         | otherwise = hex
         where hex = replace "\"" "" (show(showHex n ""))
 
-sha1 :: String -> IO String
-sha1 str = withOpenSSL $ do
-        dig <- getDigestByName "sha1"
+hashing :: String -> String -> IO String
+hashing algo str = do
+        dig <- getDigestByName algo
         let hash = digest (fromJust dig) str
         return (concat(map (\it -> toHex (ord it) 2)  hash))
 
-fingerprintX509 :: X509 -> IO String
-fingerprintX509 x509 = withOpenSSL $ do
+fingerprintX509 :: String -> X509 -> IO String
+fingerprintX509 algo x509 = do
     pem <- writeX509 x509
 
     let cutedPem = cutPem pem
     let pemDecoded = decode cutedPem
-    hash <- sha1 pemDecoded
+    hash <- hashing algo pemDecoded
     return hash
     where
         -- cuts "--Begin..." and "---End"
@@ -57,7 +57,7 @@ fingerprint domain port  = withOpenSSL $ do
 
     Just cert <- getPeerCertificate sslcon
     text <- printX509 cert
-    hash <- (fingerprintX509 cert)
+    hash <- (fingerprintX509 "sha1" cert)
     return hash
 
 main = do
