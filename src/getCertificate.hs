@@ -18,8 +18,8 @@ toHex :: Int -> Int -> String
 toHex n l
         | l > length(hex) = '0':(toHex n (l-1))
         | otherwise = hex
-        where hex = replace "\"" "" (show(showHex n "")) 
-    
+        where hex = replace "\"" "" (show(showHex n ""))
+
 sha1 :: String -> IO String
 sha1 str = withOpenSSL $ do
         dig <- getDigestByName "sha1"
@@ -50,7 +50,7 @@ fingerprint domain port  = withOpenSSL $ do
     Network.Socket.connect sock (addrAddress addr)
 
     sslctx <- context
-    contextSetDefaultCiphers sslctx 
+    contextSetDefaultCiphers sslctx
 
     sslcon <- connection sslctx sock
     OpenSSL.Session.connect sslcon
