@@ -1,7 +1,7 @@
 Name:                convergence
 Version:             0.0
 Synopsis:            convergence notary
-Build-Depends:       base, HsOpenSSL
+Build-Depends:       base, HsOpenSSL, base64-string, split, MissingH
 Build-Type:          Simple
 
 Executable:          convergence
