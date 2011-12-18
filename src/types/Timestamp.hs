@@ -16,7 +16,7 @@ getDuration (x, y) = y-x
 
 -- | 'timestampHuman' returns a string for humans representing the values of the timestamp
 timestampHuman :: Timestamp -> String
-timestampHuman (s, f) = "Timestamp Start: " ++ show s ++ " Finish: " ++ show f
+timestampHuman (s, f) = "Timestamp " ++ show s ++ " -> " ++ show f ++ " (" ++ show (f-s) ++ ")"
 
 -- | 'timestampJSON' returns a string for JSON representing the values of the timestamp
 timestampJSON :: Timestamp -> String
