@@ -1,4 +1,6 @@
 
+module Fingerprint (Fingerprint, fpHuman, fpJSON) where
+
 import Numeric
 import Data.Char
 import Data.Word
