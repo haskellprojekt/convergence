@@ -1,5 +1,5 @@
 
-module Hash (Hash, fromX509, hashHuman, hashJSON) where
+module Hash (Hash, hsFromX509, hsHuman, hsJSON) where
 
 import Numeric
 import Data.Char
@@ -21,16 +21,17 @@ import Char
 -- | 'Hash' defines a List of Word8's
 type Hash = [Word8]
 
--- | 'hashHuman' generates a human readable representation of the hash's data
-hashHuman :: Hash -> String
-hashHuman f = "Hash: " ++ hash2String f
+-- | 'hsHuman' generates a human readable representation of the hash's data
+hsHuman :: Hash -> String
+hsHuman f = "Hash: " ++ hs2String f
 
--- | 'hashJSON' generates a JSON representation of the hash's data
-hashJSON :: Hash -> String
-hashJSON f = "\"hash\": \"" ++ hash2String f ++ "\""
+-- | 'hsJSON' generates a JSON representation of the hash's data
+hsJSON :: Hash -> String
+hsJSON f = "\"hash\": \"" ++ hs2String f ++ "\""
 
-fromX509 :: X509 -> IO Hash
-fromX509 x509 = do
+-- | 'hsFromX509' calculates the sha1 hash for a x509 certificate
+hsFromX509 :: X509 -> IO Hash
+hsFromX509 x509 = do
     pem <- writeX509 x509
     hash <- sha1 $ decode $ cutPem pem
     return hash
@@ -38,23 +39,23 @@ fromX509 x509 = do
         -- cuts "--Begin..." and "---End"
         cutPem :: String -> String
         cutPem pem = concat $ init $ tail $ splitOn "\n" pem
-
+-- | 'sha1' calculates the sha1 hash
 sha1 :: String -> IO Hash
 sha1 str = do
     dig <- getDigestByName "sha1"
     let hash = digest (fromJust dig) str
     print hash
     return $ map c2w8 hash
-
+-- | 'c2w8' translate a character into a word8
 c2w8 :: Char -> Word8
 c2w8 chr = (fromIntegral $ ord chr) :: Word8
 
--- | 'hash2String' generates a String representating the hash's data
-hash2String :: Hash -> String
-hash2String [] = ""
-hash2String (f:fs)
+-- | 'hs2String' generates a String representating the hash's data
+hs2String :: Hash -> String
+hs2String [] = ""
+hs2String (f:fs)
 	| [] == fs  = x
-	| otherwise = x ++ ":" ++ hash2String fs
+	| otherwise = x ++ ":" ++ hs2String fs
 	where x = lenTo2 (upperCase (toHex f))
 --
 
