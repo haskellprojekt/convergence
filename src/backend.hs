@@ -1,3 +1,5 @@
+module Backend
+where
 import Network
 import Network.Socket
 import OpenSSL
@@ -12,31 +14,9 @@ import Numeric
 import Data.List.Split
 import Data.String.Utils
 import Char
+import Fingerprint
 
--- Konvertiert eine Zahl in die Hexidecimal Schreibweise
-toHex :: Int -> Int -> String
-toHex n l
-        | l > length(hex) = '0':(toHex n (l-1))
-        | otherwise = hex
-        where hex = replace "\"" "" (show(showHex n ""))
-
-hashing :: String -> String -> IO String
-hashing algo str = do
-        dig <- getDigestByName algo
-        let hash = digest (fromJust dig) str
-        return (concat(map (\it -> toHex (ord it) 2)  hash))
-
-fingerprintX509 :: String -> X509 -> IO String
-fingerprintX509 algo x509 = do
-    pem <- writeX509 x509
-    hash <- hashing algo $ decode $ cutPem pem
-    return hash
-    where
-        -- cuts "--Begin..." and "---End"
-        cutPem :: String -> String
-        cutPem pem = concat $ init $ tail $ splitOn "\n" pem
-
-fingerprint :: String -> Int -> IO String
+fingerprint :: String -> Int -> IO Fingerprint
 fingerprint domain port  = withOpenSSL $ do
     addrs <- getAddrInfo (Just defaultHints { addrFlags = [AI_ADDRCONFIG, AI_CANONNAME,AI_NUMERICSERV] }) (Just domain) (Just (show port))
     let addr = head addrs
@@ -52,10 +32,6 @@ fingerprint domain port  = withOpenSSL $ do
     OpenSSL.Session.connect sslcon
 
     Just cert <- getPeerCertificate sslcon
-    text <- printX509 cert
-    hash <- (fingerprintX509 "sha1" cert)
-    return hash
+    fp <- (fpFromX509 cert)
+    return $ fp
 
-main = do
-    hash <- fingerprint "facebook.com" 443
-    putStrLn hash
