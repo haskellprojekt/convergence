@@ -1,27 +1,27 @@
 
-module Fingerprint (Fingerprint, fpHuman, fpJSON) where
+module Hash (Hash, hashHuman, hashJSON) where
 
 import Numeric
 import Data.Char
 import Data.Word
 
--- | 'Fingerprint' defines a List of Word8's
-type Fingerprint = [Word8]
+-- | 'Hash' defines a List of Word8's
+type Hash = [Word8]
 
--- | 'fpHuman' generates a human readable representation of the fingerprint's data
-fpHuman :: Fingerprint -> String
-fpHuman f = "Fingerprint: " ++ fp2String f
+-- | 'hashHuman' generates a human readable representation of the hash's data
+hashHuman :: Hash -> String
+hashHuman f = "Hash: " ++ hash2String f
 
--- | 'fpJSON' generates a JSON representation of the fingerprint's data
-fpJSON :: Fingerprint -> String
-fpJSON f = "\"fingerprint\": \"" ++ fp2String f ++ "\""
+-- | 'hashJSON' generates a JSON representation of the hash's data
+hashJSON :: Hash -> String
+hashJSON f = "\"hash\": \"" ++ hash2String f ++ "\""
 
--- | 'fp2String' generates a String representating the fingerprint's data
-fp2String :: Fingerprint -> String
-fp2String [] = ""
-fp2String (f:fs)
+-- | 'hash2String' generates a String representating the hash's data
+hash2String :: Hash -> String
+hash2String [] = ""
+hash2String (f:fs)
 	| [] == fs  = x
-	| otherwise = x ++ ":" ++ fp2String fs
+	| otherwise = x ++ ":" ++ hash2String fs
 	where x = lenTo2 (upperCase (toHex f))
 --
 
