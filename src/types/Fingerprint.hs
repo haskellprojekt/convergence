@@ -1,16 +1,16 @@
 
-module FingerprintItem (FingerprintItem, fpItemHuman, fpItemJSON) where
+module Fingerprint (Fingerprint, fpHuman, fpJSON) where
 
 import Timestamp
-import Fingerprint
+import Hash
 
--- | 'FingerprintItem' defines a tupel of timestamp and fingerprint
-type FingerprintItem = (Timestamp, Fingerprint)
+-- | 'Fingerprint' defines a tupel of timestamp and hash
+type Fingerprint = (Timestamp, Hash)
 
--- | 'fpItemHuman' generates a human readable representation of the fingerprint item's data
-fpItemHuman :: FingerprintItem -> String
-fpItemHuman (t, f) = "Fingerprint Item:\n   " ++ tsHuman t ++ "\n   " ++ fpHuman f ++ "\n"
+-- | 'fpHuman' generates a human readable representation of the fingerprint's data
+fpHuman :: Fingerprint -> String
+fpHuman (t, f) = "Fingerprint:\n   " ++ tsHuman t ++ "\n   " ++ fpHuman f ++ "\n"
 
--- | 'fpItemJSON' generates a JSON representation of the fingerprint item's data
-fpItemJSON :: FingerprintItem -> String
-fpItemJSON (t, f) = "{\n   " ++ tsJSON t ++ ",\n   " ++ fpJSON f ++ "\n}"
+-- | 'fpJSON' generates a JSON representation of the fingerprint's data
+fpJSON :: Fingerprint -> String
+fpJSON (t, f) = "{\n   " ++ tsJSON t ++ ",\n   " ++ fpJSON f ++ "\n}"
