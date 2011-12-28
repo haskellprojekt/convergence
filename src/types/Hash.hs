@@ -39,12 +39,15 @@ fromX509 x509 = do
         cutPem :: String -> String
         cutPem pem = concat $ init $ tail $ splitOn "\n" pem
 
-sha1 :: String -> IO Hash 
+sha1 :: String -> IO Hash
 sha1 str = do
     dig <- getDigestByName "sha1"
     let hash = digest (fromJust dig) str
-    return $ UTF8.encode $ hash
+    print hash
+    return $ map c2w8 hash
 
+c2w8 :: Char -> Word8
+c2w8 chr = (fromIntegral $ ord chr) :: Word8
 
 -- | 'hash2String' generates a String representating the hash's data
 hash2String :: Hash -> String
