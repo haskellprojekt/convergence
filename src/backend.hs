@@ -18,7 +18,7 @@ import Fingerprint
 
 -- | starts a SSL connection to a host on port 443 and gives his fingerprint back
 queryFingerprint :: String -> Int -> IO Fingerprint
-fingerprint host port  = withOpenSSL $ do
+queryFingerprint host port  = withOpenSSL $ do
     addrs <- getAddrInfo (Just defaultHints { addrFlags = [AI_ADDRCONFIG, AI_CANONNAME,AI_NUMERICSERV] }) (Just host) (Just (show port))
     let addr = head addrs
 
