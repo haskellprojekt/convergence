@@ -1,4 +1,4 @@
-module Backend
+module Backend (queryFingerprint)
 where
 import Network
 import Network.Socket
@@ -16,9 +16,10 @@ import Data.String.Utils
 import Char
 import Fingerprint
 
-fingerprint :: String -> Int -> IO Fingerprint
-fingerprint domain port  = withOpenSSL $ do
-    addrs <- getAddrInfo (Just defaultHints { addrFlags = [AI_ADDRCONFIG, AI_CANONNAME,AI_NUMERICSERV] }) (Just domain) (Just (show port))
+-- | starts a SSL connection to a host on port 443 and gives his fingerprint back
+queryFingerprint :: String -> Int -> IO Fingerprint
+fingerprint host port  = withOpenSSL $ do
+    addrs <- getAddrInfo (Just defaultHints { addrFlags = [AI_ADDRCONFIG, AI_CANONNAME,AI_NUMERICSERV] }) (Just host) (Just (show port))
     let addr = head addrs
 
     sock <- socket (addrFamily addr) (addrSocketType addr) (addrProtocol addr)
