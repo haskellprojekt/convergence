@@ -1,5 +1,6 @@
 module Backend (queryFingerprint)
 where
+
 import Network
 import Network.Socket
 import OpenSSL
@@ -14,7 +15,7 @@ import Numeric
 import Data.List.Split
 import Data.String.Utils
 import Char
-import Fingerprint
+import Types.Fingerprint
 
 -- | starts a SSL connection to a host on port 443 and gives his fingerprint back
 queryFingerprint :: String -> Int -> IO Fingerprint

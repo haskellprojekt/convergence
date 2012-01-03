@@ -1,8 +1,7 @@
+module Types.Fingerprint (Fingerprint, fpFromX509, fpHuman, fpJSON) where
 
-module Fingerprint (Fingerprint, fpFromX509, fpHuman, fpJSON) where
-
-import Timestamp
-import Hash
+import Types.Timestamp
+import Types.Hash
 import OpenSSL.X509
 
 -- | 'Fingerprint' defines a tupel of timestamp and hash
