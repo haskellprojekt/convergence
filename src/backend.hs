@@ -1,4 +1,4 @@
-module Backend (queryFingerprint)
+module Backend (isFingerprintOk, queryFingerprint)
 where
 import Network
 import Network.Socket
@@ -15,6 +15,20 @@ import Data.List.Split
 import Data.String.Utils
 import Char
 import Fingerprint
+import Database
+import Database.SQLite
+-- | checks if a fingerprint is stored in the database
+-- | if not query the fingerprint and checks
+isFingerprintOk :: SQLiteHandle -> String -> Int -> Fingerprint -> IO Bool
+isFingerprintOk db host port fp = do
+    fps <- Database.findFingerprints db host port
+    if not $ elem fp fps then do
+        qfp <- queryFingerprint host port
+        Database.insert db host port qfp
+        return $ fp == qfp
+    else
+        return True
+
 
 -- | starts a SSL connection to a host on port 443 and gives his fingerprint back
 queryFingerprint :: String -> Int -> IO Fingerprint
