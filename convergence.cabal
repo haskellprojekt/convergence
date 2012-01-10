@@ -1,8 +1,10 @@
 Name:                convergence
-Version:             0.0
+Version:             0.1
 Synopsis:            convergence notary
-Build-Depends:       base, HsOpenSSL, base64-string, split, MissingH
+Build-Depends:       base, haskell98, HsOpenSSL, base64-string, split, MissingH, transformers, sqlite, time, utf8-string, network, bytestring, snap-server, snap-core
 Build-Type:          Simple
 
 Executable:          convergence
-Main-is:             src/convergence.hs
+GHC-Options:         -threaded
+Hs-Source-Dirs:      src
+Main-Is:             convergence.hs
