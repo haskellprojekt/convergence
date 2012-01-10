@@ -41,7 +41,7 @@ hsFromX509 x509 = do
         cutPem pem = concat $ init $ tail $ splitOn "\n" pem
 -- | 'sha1' calculates the sha1 hash
 sha1 :: String -> IO String
-sha1 str = do
+sha1 str = withOpenSSL $ do
     dig <- getDigestByName "sha1"
     let hash = digest (fromJust dig) str
     return $ concat $ map chr2hex hash
@@ -59,7 +59,7 @@ hsHuman hs = "Hash: " ++ hs
 
 -- | 'upperCase' converts a String to upper case
 upperCase :: String -> String
-upperCase = toUpper . map
+upperCase = map toUpper
 
 -- | 'lenTo2' adds a missing leading 0
 lenTo2 :: String -> String

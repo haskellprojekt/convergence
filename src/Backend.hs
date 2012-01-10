@@ -14,7 +14,7 @@ import Numeric
 import Data.List.Split
 import Data.String.Utils
 import Char
-import Fingerprint
+import Types.Fingerprint
 import Database
 import Database.SQLite
 -- | checks if a fingerprint is stored in the database

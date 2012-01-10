@@ -1,8 +1,8 @@
 module Database (connect, createTables, insert, findFingerprints) where
 
-import Fingerprint
-import Hash
-import Timestamp
+import Types.Fingerprint
+import Types.Hash
+import Types.Timestamp
 
 import Database.SQLite
 import Maybe
