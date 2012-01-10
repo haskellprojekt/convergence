@@ -51,7 +51,7 @@ chr2hex chr = lenTo2 $ toHex $ ord chr
 
 -- | 'toHex' calculates the hexadecimal representation of a given number
 toHex :: Integral a => a -> String
-toHex n = showIntAtBase 16 intToDigit n ""
+toHex n = upperCase $ showIntAtBase 16 intToDigit n ""
 
 
 hsHuman :: String -> String
@@ -59,7 +59,7 @@ hsHuman hs = "Hash: " ++ hs
 
 -- | 'upperCase' converts a String to upper case
 upperCase :: String -> String
-upperCase = map toUpper
+upperCase = toUpper . map
 
 -- | 'lenTo2' adds a missing leading 0
 lenTo2 :: String -> String
