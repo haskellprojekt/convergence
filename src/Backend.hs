@@ -22,11 +22,12 @@ import Database.SQLite
 isFingerprintOk :: SQLiteHandle -> String -> Int -> Fingerprint -> IO Bool
 isFingerprintOk db host port fp = do
     fps <- Database.findFingerprints db host port
-    if not $ elem fp fps then do
+    if not $ elem fp fps
+      then do
         qfp <- queryFingerprint host port
         Database.insert db host port qfp
         return $ fp == qfp
-    else
+      else
         return True
 
 
