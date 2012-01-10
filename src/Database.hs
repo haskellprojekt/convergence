@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Database (connect, createTables, insert, findFingerprints) where
 
 import Types.Fingerprint

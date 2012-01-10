@@ -30,12 +30,23 @@ isFingerprintOk db host port fp = do
 getFingerprints :: SQLiteHandle -> String -> Int -> IO [Fingerprint]
 getFingerprints db host port = withOpenSSL $ do
     fps <- Database.findFingerprints db host port
+<<<<<<< HEAD
     if null fps then do
         qfp <- queryFingerprint host port
         Database.insert db host port qfp
         return [qfp]
     else
         return fps
+=======
+    if not $ elem fp fps
+      then do
+        qfp <- queryFingerprint host port
+        Database.insert db host port qfp
+        return $ fp == qfp
+      else
+        return True
+
+>>>>>>> a54f098ff0c48fd82e5b5cf6707a0027315faccd
 
 -- | starts a SSL connection to a host on port 443 and gives his fingerprint back
 queryFingerprint :: String -> Int -> IO Fingerprint
