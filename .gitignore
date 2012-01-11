@@ -2,5 +2,6 @@
 *.hi
 *~
 *.sqlite
+*.pem
 dist/
 log/*
