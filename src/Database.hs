@@ -36,11 +36,16 @@ databaseSelectByHostAndPortSQL :: String
 databaseSelectByHostAndPortSQL = unlines ["select * from fingerprints",
     " where host == :host and port == :port"]
 
+databaseCheckIfFingerprintsExsists :: String
+databaseCheckIfFingerprintsExsists = unlines ["select name from sqlite_master",
+    " where type = \"table\" and name = \"fingerprints\""]
 
 -- | establish connection to the database defined in DATABASE_NAME
 connect :: IO SQLiteHandle
-connect = openConnection databaseName
-
+connect = do
+    db <- openConnection databaseName
+    createTables db
+    return db
 
 -- | create fingerprints table
 createTables :: SQLiteHandle -> IO (Maybe String)
@@ -62,8 +67,7 @@ findFingerprints db host port = do
                 [(":host", Text host),(":port",Int $ fromIntegral port)]
     case res of
         Left s -> return []
-        Right rows -> do
-                return $ rows2fingerprints $ head rows
+        Right rows -> return $ rows2fingerprints $ head rows
 
 -- | gets the value for specified columnname 
 getValue :: Row Value -> String -> Value
