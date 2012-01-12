@@ -1,4 +1,4 @@
-module Main where
+module CVG (start) where
 
 import Snap.Core
 import Snap.Util.FileServe
@@ -41,7 +41,7 @@ doQuery :: SQLiteHandle -> Snap ()
 doQuery db = do
         param <- getParam $ BS.pack "host"
         --maybe (writeBS "must specify host param in URL")
-        let (host, port) = Main.getRequest $ maybe "" BS.unpack param
+        let (host, port) = CVG.getRequest $ maybe "" BS.unpack param
         fp <- liftIO $ getFingerprints db host port
         writeBS $ BS.pack $ concat $ map fpJSON fp
 
