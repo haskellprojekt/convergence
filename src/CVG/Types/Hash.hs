@@ -1,7 +1,7 @@
 -- This module was once named Fingerprint,
 -- Hash seems for me more intuitive.
 -- 
-module Types.Hash (Hash, hsFromX509, hsHuman, hsJSON) where
+module CVG.Types.Hash (Hash, hsFromX509, hsHuman, hsJSON) where
 
 
 import Numeric

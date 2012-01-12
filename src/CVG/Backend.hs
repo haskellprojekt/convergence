@@ -1,4 +1,4 @@
-module Backend (isFingerprintOk, getFingerprints, queryFingerprint)
+module CVG.Backend (isFingerprintOk, getFingerprints, queryFingerprint)
 where
 import Network
 import Network.Socket
@@ -14,8 +14,8 @@ import Numeric
 import Data.List.Split
 import Data.String.Utils
 import Char
-import Types.Fingerprint
-import Database
+import CVG.Types.Fingerprint
+import CVG.Database
 import Database.SQLite
 
 
@@ -29,11 +29,11 @@ isFingerprintOk db host port fp = do
 -- | If there is nothing found, request the SSL certificate and return its fingerprint
 getFingerprints :: SQLiteHandle -> String -> Int -> IO [Fingerprint]
 getFingerprints db host port = withOpenSSL $ do
-    fps <- Database.findFingerprints db host port
+    fps <- CVG.Database.findFingerprints db host port
     if null fps
       then do
         qfp <- queryFingerprint host port
-        Database.insert db host port qfp
+        CVG.Database.insert db host port qfp
         return [qfp]
       else
         return fps

@@ -1,4 +1,4 @@
-module Types.Timestamp (Timestamp, tsFromX509, getStart, getFinish, getDuration, tsHuman, tsJSON) where
+module CVG.Types.Timestamp (Timestamp, tsFromX509, getStart, getFinish, getDuration, tsHuman, tsJSON) where
 import OpenSSL.X509
 import Data.Time.Clock
 import Data.Time.Clock.POSIX

@@ -1,7 +1,7 @@
-module Types.Fingerprint (Fingerprint, fpFromX509, fpHuman, fpJSON) where
+module CVG.Types.Fingerprint (Fingerprint, fpFromX509, fpHuman, fpJSON) where
 
-import Types.Timestamp
-import Types.Hash
+import CVG.Types.Timestamp
+import CVG.Types.Hash
 import OpenSSL.X509
 import OpenSSL.EVP.Digest
 import OpenSSL.EVP.PKey

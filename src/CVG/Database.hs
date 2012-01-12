@@ -1,8 +1,8 @@
-module Database (connect, createTables, insert, findFingerprints) where
+module CVG.Database (connect, createTables, insert, findFingerprints) where
 
-import Types.Fingerprint
-import Types.Hash
-import Types.Timestamp
+import CVG.Types.Fingerprint
+import CVG.Types.Hash
+import CVG.Types.Timestamp
 
 import Database.SQLite
 import Maybe

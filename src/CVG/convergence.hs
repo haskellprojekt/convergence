@@ -6,10 +6,10 @@ import Snap.Http.Server
 import Snap.Http.Server.Config
 import qualified Data.ByteString.Char8 as BS
 import Data.String
-import Types.Fingerprint
-import Backend
+import CVG.Types.Fingerprint
+import CVG.Backend
 import Control.Monad.IO.Class
-import Database
+import CVG.Database
 import Database.SQLite
 import qualified OpenSSL.Session as SSL
 
@@ -21,7 +21,7 @@ main = start
 
 start :: IO ()
 start = do
-    db <- Database.connect
+    db <- CVG.Database.connect
     httpServe serverConfig $ route [
         --("target/:host+:port", method POST doCheck),
         (BS.pack "target/:host", method GET (doQuery db))]
