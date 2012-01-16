@@ -7,7 +7,7 @@ Executable:          convergence
 Extensions:          ScopedTypeVariables, OverloadedStrings
 GHC-Options:         -threaded
 Hs-Source-Dirs:      src
-Main-Is:             CVG/convergence.hs
+Main-Is:             Main.hs
 Build-Depends:       base >= 4, haskell98, HsOpenSSL, base64-string,
                      split, MissingH, transformers, sqlite, time,
                      utf8-string,network, bytestring, snap-server,

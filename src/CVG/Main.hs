@@ -1,4 +1,4 @@
-module CVG (start) where
+module CVG.Main (start) where
 
 import Snap.Core
 import Snap.Util.FileServe
@@ -15,9 +15,6 @@ import qualified OpenSSL.Session as SSL
 
 certificateFile = "cert.pem"
 privateKeyFile = "private.pem"
-
-main :: IO ()
-main = start
 
 start :: IO ()
 start = do
@@ -41,7 +38,7 @@ doQuery :: SQLiteHandle -> Snap ()
 doQuery db = do
         param <- getParam $ BS.pack "host"
         --maybe (writeBS "must specify host param in URL")
-        let (host, port) = CVG.getRequest $ maybe "" BS.unpack param
+        let (host, port) = CVG.Main.getRequest $ maybe "" BS.unpack param
         fp <- liftIO $ getFingerprints db host port
         writeBS $ BS.pack $ concat $ map fpJSON fp
 
