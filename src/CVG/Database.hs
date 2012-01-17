@@ -9,11 +9,6 @@ import Maybe
 
 type SQLResult = Either String [[Row Value]]
 
--- | where the database is located
-databaseName :: String
-databaseName = "../fingerprints.sqlite"
-
-
 -- | sql statment to create the table
 databaseCreateSQL :: String
 databaseCreateSQL = unlines [ "create table if not exists fingerprints (",
@@ -41,8 +36,8 @@ databaseCheckIfFingerprintsExsists = unlines ["select name from sqlite_master",
     " where type = \"table\" and name = \"fingerprints\""]
 
 -- | establish connection to the database defined in DATABASE_NAME
-connect :: IO SQLiteHandle
-connect = do
+connect :: String -> IO SQLiteHandle
+connect databaseName = do
     db <- openConnection databaseName
     createTables db
     return db

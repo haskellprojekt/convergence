@@ -12,21 +12,30 @@ import Control.Monad.IO.Class
 import CVG.Database
 import Database.SQLite
 import qualified OpenSSL.Session as SSL
+import CVG.Config hiding ( defaultConfig )
 
-certificateFile = "cert.pem"
-privateKeyFile = "private.pem"
+start :: CConfig -> IO ()
+start config = do
+      db <- CVG.Database.connect $ sqlite_db config
+      httpServe (serverConfig config) $ route [
+                --("target/:host+:port", method POST doCheck),
+                (BS.pack "target/:host", method GET (doQuery db))]
 
-start :: IO ()
-start = do
-    db <- CVG.Database.connect
-    httpServe serverConfig $ route [
-        --("target/:host+:port", method POST doCheck),
-        (BS.pack "target/:host", method GET (doQuery db))]
+serverConfig :: MonadSnap m => CConfig -> Config m a
+serverConfig config = setSSLKey (ssl_key config) $
+             setSSLCert (ssl_cert config) $
+             snapSetSSLPort (ports config) $
+             snapSetPort (ports config) $
+             defaultConfig
 
-serverConfig :: MonadSnap m => Config m a
-serverConfig = setSSLKey privateKeyFile $
-             setSSLCert certificateFile $
-             setSSLPort 8002 $ defaultConfig
+snapSetSSLPort :: MonadSnap m => Ports -> Config m a -> Config m a
+snapSetSSLPort Ports { ssl_port = Just ssl } config = setSSLPort ssl $ config
+snapSetSSLPort Ports { ssl_port = Nothing } config = config
+
+snapSetPort :: MonadSnap m => Ports -> Config m a -> Config m a
+snapSetPort Ports { plain_port = Just port } config = setPort port $ config
+snapSetPort Ports { plain_port = Nothing } config = config
+
 
 getRequest :: String -> (String, Int)
 getRequest t = (getHost t, read $ getPort t)
