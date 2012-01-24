@@ -1,10 +1,13 @@
 module CVG.Main (start) where
 
+import OpenSSL
+import qualified OpenSSL.Session as SSL
 import Snap.Core
 import Snap.Util.FileServe
 import Snap.Http.Server
 import Snap.Http.Server.Config
 import qualified Data.ByteString.Char8 as BS
+import qualified Data.ByteString.Lazy as BSL
 import Data.String
 import CVG.Types.Fingerprint
 import CVG.Backend
@@ -13,13 +16,24 @@ import CVG.Database
 import Database.SQLite
 import qualified OpenSSL.Session as SSL
 import CVG.Config hiding ( defaultConfig )
+import Data.List.Utils
 
 start :: CConfig -> IO ()
-start config = do
+start config = withOpenSSL $ do
       db <- CVG.Database.connect $ sqlite_db config
+      ssl <- sslConfig config
+
       httpServe (serverConfig config) $ route [
-                --("target/:host+:port", method POST doCheck),
+                --(BS.pack "target/:host", method POST (doCheck ssl db)),
                 (BS.pack "target/:host", method GET (doQuery db))]
+
+sslConfig :: CConfig -> IO SSL.SSLContext
+sslConfig config = do 
+      ssl <- SSL.context
+      SSL.contextSetPrivateKeyFile ssl $ ssl_key config
+      SSL.contextSetCertificateFile ssl $ ssl_cert config
+      SSL.contextSetDefaultCiphers ssl
+      return ssl
 
 serverConfig :: MonadSnap m => CConfig -> Config m a
 serverConfig config = setSSLKey (ssl_key config) $
@@ -50,4 +64,16 @@ doQuery db = do
         let (host, port) = CVG.Main.getRequest $ maybe "" BS.unpack param
         fp <- liftIO $ getFingerprints db host port
         writeBS $ BS.pack $ concat $ map fpJSON fp
+{-
+doCheck :: SSL.SSLContext -> SQLiteHandle -> Snap()
+doCheck ssl db = do
+    param <- getParam $ BS.pack "host"
 
+    let (host,port) = CVG.Main.getRequest $ maybe "" BS.unpack param
+    
+    body <- readRequestBody 512
+    let bodystr = BSL.unpack body
+    let fp :: String = "fingerprint=" "" bodystr
+   
+    writeBS $ BS.pack ("host:" ++ host ++ "\nport:" ++ show port ++ "\nfingerprint:" ++ fp )
+-}
