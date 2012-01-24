@@ -10,10 +10,8 @@ data CConfig = CConfig
      }
 
 defaultConfig = CConfig
-     { ssl_cert = "cert.pem"
-     , ssl_key = "private.pem"
-
-     , sqlite_db = "fingerprints.sqlite"
-
+     { ssl_cert = "/var/lib/hsconvergence/cert.pem"
+     , ssl_key = "/var/lib/hsconvergence/privkey.pem"
+     , sqlite_db = "/var/lib/hsconvergence/fingerprints.sqlite"
      , ports = Ports { plain_port = Just 80, ssl_port = Just 443 }
      }
