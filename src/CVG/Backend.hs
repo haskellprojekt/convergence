@@ -1,4 +1,4 @@
-module CVG.Backend (isFingerprintOk, getFingerprints, queryFingerprint, simpleScan)
+module CVG.Backend (getFingerprints, queryFingerprint, simpleScan)
 where
 import Network
 import Network.Socket
@@ -20,10 +20,10 @@ import Database.SQLite
 import CVG.Types.Backend
 
 -- | checks if a fingerprint is stored in the database
-isFingerprintOk :: SQLiteHandle -> String -> Int -> Fingerprint -> IO Bool
-isFingerprintOk db host port fp = do
-    fps <- getFingerprints db host port
-    return $ elem fp fps
+-- isFingerprintOk :: SQLiteHandle -> Host -> Fingerprint -> IO Bool
+-- isFingerprintOk db host fp = do
+--     fps <- getFingerprints db host
+--     return $ elem fp fps
 
 -- | get the fingerprints for a host and port. First it looks at the Database.
 -- | If there is nothing found, request the SSL certificate and return its fingerprint
