@@ -1,4 +1,4 @@
-module CVG.Backend (isFingerprintOk, getFingerprints, queryFingerprint)
+module CVG.Backend (isFingerprintOk, getFingerprints, queryFingerprint, simpleScan)
 where
 import Network
 import Network.Socket
@@ -17,7 +17,7 @@ import Char
 import CVG.Types.Fingerprint
 import CVG.Database
 import Database.SQLite
-
+import CVG.Types.Backend
 
 -- | checks if a fingerprint is stored in the database
 isFingerprintOk :: SQLiteHandle -> String -> Int -> Fingerprint -> IO Bool
@@ -37,6 +37,13 @@ getFingerprints db host port = withOpenSSL $ do
         return [qfp]
       else
         return fps
+
+simpleScan :: Request -> IO Response
+simpleScan (Request host Nothing) = do
+    fpr <- queryFingerprint host
+    return $ Response [fpr]
+simpleScan (Request host (Just fp)) = do
+    error "Not implemented"
 
 -- | starts a SSL connection to a host on port 443 and gives his fingerprint back
 queryFingerprint :: String -> Int -> IO Fingerprint
