@@ -7,6 +7,7 @@ import Snap.Http.Server.Config
 import qualified Data.ByteString.Char8 as BS
 import Data.String
 import CVG.Types.Fingerprint
+import CVG.Types.Backend
 import CVG.Backend
 import Control.Monad.IO.Class
 import CVG.Database
@@ -16,10 +17,9 @@ import CVG.Config hiding ( defaultConfig )
 
 start :: CConfig -> IO ()
 start config = do
-      db <- CVG.Database.connect $ sqlite_db config
       httpServe (serverConfig config) $ route [
                 --("target/:host+:port", method POST doCheck),
-                (BS.pack "target/:host", method GET (doQuery db))]
+                (BS.pack "target/:host", method GET (doQuery config))]
 
 serverConfig :: MonadSnap m => CConfig -> Config m a
 serverConfig config = setSSLKey (ssl_key config) $
@@ -43,11 +43,14 @@ getRequest t = (getHost t, read $ getPort t)
                 getHost = takeWhile (/= ' ')
                 getPort = dropWhile (/= ' ') . drop 1
 
-doQuery :: SQLiteHandle -> Snap ()
-doQuery db = do
+doQuery :: CConfig -> Snap ()
+doQuery config = do
         param <- getParam $ BS.pack "host"
         --maybe (writeBS "must specify host param in URL")
         let (host, port) = CVG.Main.getRequest $ maybe "" BS.unpack param
-        fp <- liftIO $ getFingerprints db host port
-        writeBS $ BS.pack $ concat $ map fpJSON fp
+        request <- liftIO $ before config $ Request (Host host port) Nothing
+        response <- liftIO $ backend config $ request
+        final <- liftIO $ after config $ response
+        output <- liftIO $ toJSON $ final
+        writeBS $ BS.pack $ output
 

@@ -9,3 +9,6 @@ data Request = Request
      { hostname :: Host
      , fingerprint :: Maybe String
      }
+
+toJSON :: Response -> IO String
+toJSON (Response fps) = return $ concat $ map fpJSON fps
