@@ -33,8 +33,8 @@ simpleScan (Request host (Just fp)) = do
     error "Not implemented"
 
 -- | starts a SSL connection to a host on port 443 and gives his fingerprint back
-queryFingerprint :: String -> Int -> IO Fingerprint
-queryFingerprint host port  = withOpenSSL $ do
+queryFingerprint :: Host -> IO Fingerprint
+queryFingerprint (Host host port)  = withOpenSSL $ do
     addrs <- getAddrInfo (Just defaultHints { addrFlags = [AI_ADDRCONFIG, AI_CANONNAME,AI_NUMERICSERV] }) (Just host) (Just (show port))
     let addr = head addrs
 
