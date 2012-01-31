@@ -3,6 +3,7 @@ module CVG.Database (connect, createTables, insert, findFingerprints) where
 import CVG.Types.Fingerprint
 import CVG.Types.Hash
 import CVG.Types.Timestamp
+import CVG.Types.Backend
 
 import Database.SQLite
 import Maybe
@@ -47,8 +48,8 @@ createTables :: SQLiteHandle -> IO (Maybe String)
 createTables db = execStatement_ db databaseCreateSQL
 
 -- | insert a new row
-insert :: SQLiteHandle -> String -> Int -> Fingerprint -> IO (Maybe String)
-insert db host port ((start, end), hash) = execParamStatement_ db databaseInsertSQL [(":host", Text host),
+insert :: SQLiteHandle -> Request -> Response -> IO (Maybe String)
+insert db (Request (Host host port) _) (Response [((start, end), hash)]) = execParamStatement_ db databaseInsertSQL [(":host", Text host),
                  (":port" , Int  $ fromIntegral port),
                  (":start", Int  $ fromIntegral start),
                  (":end",  Int  $ fromIntegral end),
@@ -56,12 +57,12 @@ insert db host port ((start, end), hash) = execParamStatement_ db databaseInsert
 
 
 -- | returns all fingerpints to a given host and port
-findFingerprints :: SQLiteHandle -> String -> Int -> IO [Fingerprint]
-findFingerprints db host port = do
+findFingerprints :: SQLiteHandle -> Request -> IO Response
+findFingerprints db (Request (Host host port) _) = do
     res :: SQLResult <- execParamStatement db databaseSelectByHostAndPortSQL 
                 [(":host", Text host),(":port",Int $ fromIntegral port)]
     case res of
-        Left s -> return []
+        Left s -> return (Response [])
         Right rows -> return $ rows2fingerprints $ head rows
 
 -- | gets the value for specified columnname 
@@ -72,13 +73,27 @@ getValue ((column, value):row) name
     | otherwise = getValue row name
 
 -- | translate the sqlite rows into the fingerprints
-rows2fingerprints :: [Row Value] -> [Fingerprint]
-rows2fingerprints [] = []
-rows2fingerprints (row:rows) = 
-    ((fromIntegral start, fromIntegral end), hash):rows2fingerprints rows
+rows2fingerprints :: [Row Value] -> Response
+rows2fingerprints [] = Response []
+rows2fingerprints (row:rows) =
+    Response (((fromIntegral start, fromIntegral end), hash):rest)
     where 
         (Int start) = getValue row "start"
         (Int end) = getValue row "end"
         (Text hash) = getValue row "hash"
+        (Response rest) = rows2fingerprints rows
 
+emptyResponse :: Response -> Bool
+emptyResponse (Response []) = True
+emptyResponse _ = False
 
+dbCache :: SQLiteHandle -> (Request -> IO Response) -> Request -> IO Response
+dbCache db scan req = do
+        fps <- findFingerprints db req
+        if emptyResponse fps
+          then do
+             resp <- scan req
+             insert db req resp
+             return resp
+          else
+             return fps
